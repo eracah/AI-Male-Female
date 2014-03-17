@@ -1,4 +1,4 @@
-import java.nio.file.*;
+//import java.nio.file.*;
 import java.io.*;
 import java.util.*;
 
@@ -6,6 +6,7 @@ public class Main
 {
 	public static void main(String[] args)
 	{	
+   
 		if(args.length < 1) 
 		{
   			System.err.println("Invalid command line, at least one argument required");
@@ -17,6 +18,7 @@ public class Main
       if(args[i].equalsIgnoreCase("-test"))
       {
         System.out.println("call test()");
+        
       }
 
       else if(args[i].equalsIgnoreCase("-train"))
@@ -75,16 +77,14 @@ public class Main
                 //in.close();
                 Data d = new Data(0.1, image);
                 for(int rows = 0; row < 120; row++)
-                { System.out.println();
+                { //System.out.println();
                   for(int cols = 0; cols < 128; cols++)
                   {
-                    System.out.print(d.image2DArray[rows][cols]);
-                    System.out.print(" ");
+                    //System.out.print(d.image2DArray[rows][cols]);
+                    //System.out.print(" ");
                   }
                 }
-                System.out.println();
-                System.out.println("Sex is: " + d.sex);
-
+                
           }
 
 
@@ -98,3 +98,18 @@ public class Main
     }
  	}
 }
+
+/*
+test = true;
+ int[] imageDim = {120,128};
+    NeuralNetwork NN = new NeuralNetwork(3,1,imageDim);
+
+    boolean test = false;
+
+//System.out.println();
+                System.out.println("Sex is: " + d.sex);
+
+                if(test)
+                {
+                  System.out.println(NN.test(d));
+                }*/
