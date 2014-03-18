@@ -9,6 +9,10 @@ public class Data
 	public static double FEMALE = 0.1;
 	public static double MALE = 0.9;
 
+	public Data()
+	{
+		int a = 3 + 3;
+	}
 	public Data(double s, int[][] array)
 	{
 		sex = s;

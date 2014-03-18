@@ -1,50 +1,120 @@
-
+import java.lang.Math;
 public class NeuralNetwork
 {
 	HiddenUnit[] hiddenUnitArray;
-	OutputUnit[] outputUnitArray;
-	double[] outputsHidden;
-	double[] outputsOutput;
-	int numberOfHiddenUnits;
-	int numberOfOutputUnits;
+	OutputUnit outputUnit;
+	double[] hiddenOutputs, hiddenErrors;
+	double outputError;
+	int numberOfHiddenUnits, numberOfOutputUnits;
+	double learningRate = 0.3; 
+	boolean terminate;
+
 
 	public NeuralNetwork(int hiddenUnits, int outputUnits, int[] inputDimensions)
 	{
 		numberOfHiddenUnits = hiddenUnits;
 		numberOfOutputUnits = outputUnits;
-
 		hiddenUnitArray = new HiddenUnit[numberOfHiddenUnits];
+
 		for(int i = 0; i < numberOfHiddenUnits; i ++)
-		{
 			hiddenUnitArray[i] = new HiddenUnit(inputDimensions);
+		
+		
+		outputUnit = new OutputUnit(numberOfHiddenUnits);
+		
+
+		hiddenOutputs = new double[numberOfHiddenUnits];
+
+		hiddenErrors = new double[numberOfHiddenUnits];
+	}
+
+	public void checkOutputWeights()
+	{
+		
+			outputUnit.printWeights();
+	}
+
+	//randomly initializes all the output weights to numbers b/w lowrange and endrange
+	public void initializeOutputWeightsToBetween(double lowRange, double endRange)
+	{
+		
+			for (int j = 0 ; j < outputUnit.length; j++)
+				outputUnit.changeWeight(j, lowRange + Math.random() * (endRange - lowRange)); 
+
+
+	}
+
+	//
+	public void trainNetwork(Data[] trainingSet) 
+	{
+
+		terminate = false;
+		//initialize all output weights to random numbers between -0.5 and 0.5.
+		//keep hidden weights the same
+		initializeOutputWeightsToBetween(-0.05, 0.05);
+		//System.out.println("initial");
+		//outputUnit.printWeights();
+
+		while(!terminate)
+		{
+			//System.out.println("hello!");
+			for(int imageIndex = 0; imageIndex < trainingSet.length; imageIndex++)
+			{
+				Data currentImage = trainingSet[imageIndex];
+				//propagate forward through the network
+				double output = passThroughNetwork(currentImage);
+
+				//for each output unit (just one) calculate error
+				outputError = output * (1 - output) * (currentImage.sex - output);
+
+				//for each hidden unit calculate its error
+				for(int hiddenIndex = 0; hiddenIndex < numberOfHiddenUnits; hiddenIndex++)
+					hiddenErrors[hiddenIndex] = hiddenOutputs[hiddenIndex] * (1 - hiddenOutputs[hiddenIndex]) * 
+																			outputError * outputUnit.weights[hiddenIndex];
+				//update each network weight wji
+				//for hidden units
+				for(int hiddenIndex = 0; hiddenIndex < numberOfHiddenUnits; hiddenIndex++)
+					for(int i = 0; i < hiddenUnitArray[hiddenIndex].height; i++)
+						for(int j = 0; j < hiddenUnitArray[hiddenIndex].width; j++)
+							hiddenUnitArray[hiddenIndex].weights[i][j] += learningRate * hiddenErrors[hiddenIndex] * 
+																													currentImage.image2DArray[i][j];
+				//for(int hiddenIndex = 0; hiddenIndex < numberOfHiddenUnits; hiddenIndex++)
+					//hiddenUnitArray[hiddenIndex].printWeights();
+
+				//for output units
+				for(int weightIndex = 0; weightIndex < outputUnit.length; weightIndex++)
+					outputUnit.weights[weightIndex] += learningRate * outputError * hiddenOutputs[weightIndex];
+				
+				//outputUnit.printWeights();
+
+
+
+
+			}
+			terminate = true;
+			
 		}
 		
-		outputUnitArray = new OutputUnit[numberOfOutputUnits];
-		for(int i = 0; i < numberOfOutputUnits; i ++)
-		{
-			outputUnitArray[i] = new OutputUnit(numberOfHiddenUnits);
-		}
+		
 
-		outputsHidden = new double[numberOfHiddenUnits];
-		outputsOutput = new double[numberOfOutputUnits];
 	}
+	public double calcSigmoid(double net)
+	{
+		return 1 / (1 + Math.exp(-net));
+	}
+
 	public double passThroughNetwork(Data imageDataObject)
 	{
 		for (int i = 0; i < numberOfHiddenUnits; i++)
-			outputsHidden[i] = hiddenUnitArray[i].getOutput(imageDataObject.image2DArray);
-		
-		//for (int j = 0; j < numberOfOutputUnits; j++)
-			//outputOutputs[j] = outputUnitArray[j].getOutput(outputsHidden);
-
-
-		return outputUnitArray[0].getOutput(outputsHidden);
+			hiddenOutputs[i] = hiddenUnitArray[i].getOutput(imageDataObject.image2DArray);
+		return outputUnit.getOutput(hiddenOutputs);
 
 	}
 
 
 	public final class HiddenUnit
 	{
-			int[][] weights;
+			double[][] weights;
 			int output;
 			int height;
 			int width;
@@ -53,37 +123,57 @@ public class NeuralNetwork
 			{
 				height = inputDim[0];
 				width = inputDim[1];
-				weights = new int[height][width];
+				weights = new double[height][width];
 			}
 
 			public double getOutput(int[][] imageInput)
 			{
-				int output = 0;
+				double output = 0;
 				for(int i = 0; i < height; i++)
 					for(int j = 0; j < width; j++)
 						output += weights[i][j] * imageInput[i][j];
-				return output;
+			
+				return calcSigmoid(output);
+			}
+			public void changeWeight(int height, int width, double newWeightValue)
+			{
+				weights[height][width] = newWeightValue;
+			}
+			public void printWeights()
+			{
+				for(int i = 0; i < height; i++)
+					for(int j = 0; j < width; j++)
+						System.out.println(weights[i][j]);
 			}
 
 		}
 
 		public class OutputUnit
 		{
-			int [] weights;
+			double [] weights;
 			int output;
 			int length;
 
 			public OutputUnit(int inputLength)
 			{
 				length = inputLength;
-				weights = new int[length];
+				weights = new double[length];
 			}
 			public double getOutput(double [] hiddenUnitOutputs)
 			{
-				int output = 0;
+				double output = 0;
 				for(int i = 0; i < length; i++)
 					output += weights[i] * hiddenUnitOutputs[i];
-				return output;
+				return calcSigmoid(output);
+			}
+			public void changeWeight(int weightIndex, double newWeightValue)
+			{
+				weights[weightIndex] = newWeightValue;
+			}
+			public void printWeights()
+			{
+				for (int j = 0 ; j < length; j++)
+					System.out.println(weights[j]);
 			}
 
 		}
