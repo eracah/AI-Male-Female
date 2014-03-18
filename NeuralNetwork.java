@@ -8,9 +8,10 @@ public class NeuralNetwork
 	int numberOfHiddenUnits, numberOfOutputUnits;
 	double learningRate = 0.3; 
 	boolean terminate;
+	int trainNumber = 10;
 
 
-	public NeuralNetwork(int hiddenUnits, int outputUnits, int[] inputDimensions)
+	public NeuralNetwork(int hiddenUnits, int outputUnits, int[] inputDimensions, int howmany)
 	{
 		numberOfHiddenUnits = hiddenUnits;
 		numberOfOutputUnits = outputUnits;
@@ -22,6 +23,7 @@ public class NeuralNetwork
 		outputUnit = new OutputUnit(numberOfHiddenUnits);
 		hiddenOutputs = new double[numberOfHiddenUnits];
 		hiddenErrors = new double[numberOfHiddenUnits];
+		trainNumber = howmany;
 	}
 
 
@@ -44,7 +46,7 @@ public class NeuralNetwork
 		initializeOutputWeightsToBetween(-0.05, 0.05);
 		//System.out.println("initial");
 		//outputUnit.printWeights();
-
+		int count = 0
 		while(!terminate)
 		{
 			//System.out.println("hello!");
@@ -82,7 +84,9 @@ public class NeuralNetwork
 
 
 			}
-			terminate = true;
+			count ++;
+			if(count == trainNumber)
+				terminate = true;
 			
 		}
 		
