@@ -19,26 +19,16 @@ public class NeuralNetwork
 		for(int i = 0; i < numberOfHiddenUnits; i ++)
 			hiddenUnitArray[i] = new HiddenUnit(inputDimensions);
 		
-		
 		outputUnit = new OutputUnit(numberOfHiddenUnits);
-		
-
 		hiddenOutputs = new double[numberOfHiddenUnits];
-
 		hiddenErrors = new double[numberOfHiddenUnits];
 	}
 
-	public void checkOutputWeights()
-	{
-		
-			outputUnit.printWeights();
-	}
 
 	//randomly initializes all the output weights to numbers b/w lowrange and endrange
 	public void initializeOutputWeightsToBetween(double lowRange, double endRange)
 	{
-		
-			for (int j = 0 ; j < outputUnit.length; j++)
+		for (int j = 0 ; j < outputUnit.length; j++)
 				outputUnit.changeWeight(j, lowRange + Math.random() * (endRange - lowRange)); 
 
 
@@ -110,6 +100,8 @@ public class NeuralNetwork
 		return outputUnit.getOutput(hiddenOutputs);
 
 	}
+
+	public int test(Data)
 
 
 	public final class HiddenUnit
