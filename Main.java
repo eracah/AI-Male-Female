@@ -4,17 +4,11 @@ import java.util.*;
 
 public class Main
 {
+  
 	public static void main(String[] args)
-	{	
-
-    int[] imageDim = {120,128};
-    NeuralNetwork NN = new NeuralNetwork(3,1,imageDim);
-    Data d = new Data();
-    boolean test = false;
-     boolean train = false;
-   
-
-
+	{
+    int[] dimensions = {120,128};
+    NeuralNetwork NN = new NeuralNetwork(3, 1, dimensions);
 		if(args.length < 1) 
 		{
   			System.err.println("Invalid command line, at least one argument required");
@@ -26,89 +20,45 @@ public class Main
       if(args[i].equalsIgnoreCase("-train"))
       {
 
-        System.out.println("call test()");
-        test = true;
-      }
-
-      else if(args[i].equalsIgnoreCase("-train"))
-      {
         System.out.println("call train()");
-        train = true;
-      }
 
-  		else
-      { 
-          try
-    		  {
+        ArrayList<String> femaleFiles = new ArrayList<String>();
+        ArrayList<String> maleFiles = new ArrayList<String>();
+        femaleFiles = getFileNames("Female"); //list of female image file names
+        // Data[] femaleData = new Data[femaleFiles.size()]; //Array of female Data objects
+        ArrayList<Data> femaleData = new ArrayList<Data>();
 
-                d = new Data(0.1, args[i]);
-                System.out.println("created Data object");
-                for(int rows = 0; rows < 120; rows++)
-                { 
-                  //System.out.println();
-                  for(int cols = 0; cols < 128; cols++)
-                  {
-                    //System.out.print(d.image2DArray[rows][cols]);
-                    //System.out.print(" ");
-                  }
-                }
-                //System.out.println();
-                System.out.println("Sex is: " + d.sex);
-
-        System.out.println("called train()");
-        try
-          {
-            ArrayList<String> femaleFiles = new ArrayList<String>();
-            ArrayList<String> maleFiles = new ArrayList<String>();
-            femaleFiles = getFileNames("Female"); //list of female image file names
-            // Data[] femaleData = new Data[femaleFiles.size()]; //Array of female Data objects
-            ArrayList<Data> femaleData = new ArrayList<Data>();
-
-            //int fIndex = 0;
-            for(String name : femaleFiles)
-            {
-              Data f = new Data(0.1, name);
-              femaleData.add(f);
-              // f.print();
-              // System.out.println();
-              // fIndex++;
-            }
-
-            //int mIndex = 0;
-            maleFiles = getFileNames("Male");
-            //Data[] maleData = new Data[maleFiles.size()]; //Array of male Data objects
-            ArrayList<Data> maleData = new ArrayList<Data>();
-            for(String name : maleFiles)
-            {
-              Data m = new Data(0.9, maleFiles.get(0));
-              maleData.add(m);
-              // m.print();
-              // System.out.println();
-              //mIndex++;
-            }
-
-            ArrayList<ArrayList<Data>> shuffledImages = new ArrayList<ArrayList<Data>>();
-            shuffledImages = shuffle(maleData, femaleData);
-
-
-            int setNum = 0;
-            for(ArrayList<Data> s : shuffledImages)
-            {
-              System.out.println("\nset: " + setNum);
-              for(Data d : s)
-              {
-                d.print();
-              }
-              setNum++;
-            }
-                
-          }
-
-          catch (Exception e)
+        for(String name : femaleFiles)
         {
-          //Catch exception if any
-          System.err.println("Error: " + e.getMessage());
+          Data f = new Data(0.1, name);
+          femaleData.add(f);
         }
+
+        maleFiles = getFileNames("Male");
+        //Data[] maleData = new Data[maleFiles.size()]; //Array of male Data objects
+        ArrayList<Data> maleData = new ArrayList<Data>();
+        for(String name : maleFiles)
+        {
+          Data m = new Data(0.9, maleFiles.get(0));
+          maleData.add(m);
+        }
+
+        ArrayList<ArrayList<Data>> shuffledImages = new ArrayList<ArrayList<Data>>();
+        shuffledImages = shuffle(maleData, femaleData);
+
+
+        int setNum = 0;
+        for(ArrayList<Data> s : shuffledImages)
+        {
+          System.out.println("\nset: " + setNum);
+          for(Data dTemp : s)
+          {
+            dTemp.print();
+          }
+          setNum++;
+        }
+
+        fiveFold(shuffledImages,NN);  
       }
 
       else if(args[i].equalsIgnoreCase("-test"))
@@ -130,18 +80,6 @@ public class Main
 
       i++;
     }
-    Data[] dataArray = new Data[200];
-    for (int j = 0; j < 200; j ++)
-    {
-      dataArray[j] = d;
-    }
-    if(train)
-    {
-      NN.trainNetwork(dataArray);
-    }
-    
-    if(test)
-      System.out.println(NN.passThroughNetwork(d));
     
  	}
 
@@ -209,6 +147,23 @@ public class Main
     return shuffled;
   }
 
+  public static void fiveFold(ArrayList<ArrayList<Data>> ald, NeuralNetwork nn)
+  {
+    ArrayList<Data> tempDArray = new ArrayList<Data>();
+    for(int i = 0; i < 5; i++)
+    {
+      for(int j = 0; j < 5; j++)
+      {
+        if(i != j)
+        {
+          tempDArray = ald.get(j);
+          Data[] dTemp = new Data[tempDArray.size()];
+          tempDArray.toArray(dTemp);
+          nn.trainNetwork(dTemp);
+        }
+      }
+    }
+  }
 }
 
 
