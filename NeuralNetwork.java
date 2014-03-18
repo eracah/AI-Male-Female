@@ -123,6 +123,15 @@ public class NeuralNetwork
 		return numberCorrect / length;
 	}
 
+	public TestData[] testTest(TestData[] testDataArray, int length)
+	{
+		for(int i = 0; i < length; i++)
+		{
+			testDataArray[i].sex = passThroughNetwork(testDataArray[i]);
+		}
+		return testDataArray;
+	}
+
 
 	public final class HiddenUnit
 	{
