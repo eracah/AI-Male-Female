@@ -9,7 +9,10 @@ public class Data
 	public static double FEMALE = 0.1;
 	public static double MALE = 0.9;
 
-	public Data(double s, int[][] array)
+	public Data()
+  {}
+
+  public Data(double s, int[][] array)
 	{
 		sex = s;
 		image2DArray = array;
@@ -21,7 +24,7 @@ public class Data
 		try
     {
       FileInputStream fstream = new FileInputStream(file);
-            System.out.println("file: " + file);
+            System.out.println("file: " + file); // file used to create object
 
       BufferedReader br = new BufferedReader(new InputStreamReader(fstream));
       String strLine;
@@ -73,5 +76,18 @@ public class Data
           //Catch exception if any
           System.err.println("Error: " + e.getMessage());
         }
+  }
+
+  public void print()
+  {
+    // for(int i = 0; i < 120; i++)
+    // {
+    //   System.out.println();
+    //   for(int j = 0; j < 128; j++)
+    //   {
+    //     System.out.print(image2DArray[i][j] + " ");
+    //   }
+    // }
+    System.out.println("Sex: " + ((sex == 0.1) ? "Female" : "Male"));
   }
 }
