@@ -11,12 +11,7 @@ public class Data
 
 	public Data()
 
-	{
-		
-	}
-	public Data(double s, int[][] array)
-
-  {}
+	{}
 
   public Data(double s, int[][] array)
 	{
