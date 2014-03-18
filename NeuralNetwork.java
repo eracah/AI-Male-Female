@@ -56,6 +56,7 @@ public class NeuralNetwork
 
 				//for each output unit (just one) calculate error
 				outputError = output * (1 - output) * (currentImage.sex - output);
+				
 
 				//for each hidden unit calculate its error
 				for(int hiddenIndex = 0; hiddenIndex < numberOfHiddenUnits; hiddenIndex++)
@@ -101,7 +102,26 @@ public class NeuralNetwork
 
 	}
 
-	public int test(Data)
+	public int gender(double output)
+	{
+		if(output < 0.5)
+			return 0; //female
+		else
+			return 1; //male
+	}
+
+	public double testImages(Data[] testImages, int length)
+	{
+		int output;
+		double numberCorrect = 0.0;
+		for(int i = 0; i < length; i++)
+		{
+			if (gender(passThroughNetwork(testImages[i])) == gender(testImages[i].sex))
+				numberCorrect++;
+
+		}
+		return numberCorrect / length;
+	}
 
 
 	public final class HiddenUnit
